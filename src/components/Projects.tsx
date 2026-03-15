@@ -1,6 +1,14 @@
+import { useRef, useEffect } from 'react';
 import { ExternalLink, Github, Smartphone, Settings, Home } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Projects() {
+  const headingRef = useRef<HTMLDivElement>(null);
+  const projectsContainerRef = useRef<HTMLDivElement>(null);
+
   const projects = [
     {
       title: 'AI Career Coach',
@@ -28,10 +36,57 @@ export default function Projects() {
     },
   ];
 
+  useEffect(() => {
+    // Animate heading
+    if (headingRef.current) {
+      gsap.fromTo(
+        headingRef.current,
+        { opacity: 0, y: 60 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: headingRef.current,
+            start: 'top 80%',
+            end: 'top 20%',
+            scrub: false,
+            markers: false,
+          },
+        }
+      );
+    }
+
+    // Animate project cards with stagger
+    if (projectsContainerRef.current) {
+      const cards = projectsContainerRef.current.querySelectorAll('[data-project-card]');
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 60, scale: 0.95 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'back.out',
+          scrollTrigger: {
+            trigger: projectsContainerRef.current,
+            start: 'top 75%',
+            end: 'top 25%',
+            scrub: false,
+            markers: false,
+          },
+        }
+      );
+    }
+  }, []);
+
   return (
     <section id="projects" className="py-20 bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-end mb-16 flex-wrap gap-4">
+        <div ref={headingRef} className="flex justify-between items-end mb-16 flex-wrap gap-4">
           <div>
             <h2 className="text-2xl text-gray-500 mb-4 font-light">Portfolio</h2>
             <h3 className="text-6xl lg:text-7xl font-black">
@@ -45,12 +100,13 @@ export default function Projects() {
           </button>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div ref={projectsContainerRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => {
             const Icon = project.icon;
             return (
               <div
                 key={index}
+                data-project-card
                 className="group relative bg-black rounded-2xl overflow-hidden border border-gray-800 hover:border-lime-400/30 transition-all duration-300"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />

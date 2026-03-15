@@ -1,6 +1,14 @@
+import { useRef, useEffect } from 'react';
 import { Code, Zap, Brain, Database } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Services() {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const servicesContainerRef = useRef<HTMLDivElement>(null);
+
   const services = [
     {
       icon: Code,
@@ -32,12 +40,59 @@ export default function Services() {
     },
   ];
 
+  useEffect(() => {
+    // Animate heading
+    gsap.fromTo(
+      headingRef.current,
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: 'top 80%',
+          end: 'top 20%',
+          scrub: false,
+          markers: false,
+        },
+      }
+    );
+
+    // Animate service cards with stagger
+    if (servicesContainerRef.current) {
+      const cards = servicesContainerRef.current.querySelectorAll('[data-service-card]');
+      gsap.fromTo(
+        cards,
+        { opacity: 0, x: -60 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: servicesContainerRef.current,
+            start: 'top 75%',
+            end: 'top 25%',
+            scrub: false,
+            markers: false,
+          },
+        }
+      );
+    }
+  }, []);
+
   return (
     <section id="services" className="py-20 bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <h2 className="text-2xl text-gray-500 mb-4 font-light">Services</h2>
-          <h3 className="text-6xl lg:text-7xl font-black max-w-3xl leading-tight">
+          <h3
+            ref={headingRef}
+            className="text-6xl lg:text-7xl font-black max-w-3xl leading-tight"
+          >
             Available services that I can work on
           </h3>
         </div>
@@ -49,10 +104,14 @@ export default function Services() {
             </h4>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div
+            ref={servicesContainerRef}
+            className="grid md:grid-cols-2 gap-6"
+          >
             {services.map((service, index) => (
               <div
                 key={index}
+                data-service-card
                 className="group bg-black border border-gray-800 p-8 rounded-2xl hover:border-lime-400/30 transition-all duration-300"
               >
                 <div className="flex items-start justify-between mb-6">

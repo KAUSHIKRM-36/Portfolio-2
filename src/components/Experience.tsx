@@ -1,19 +1,74 @@
+import { useRef, useEffect } from 'react';
 import { Briefcase } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Experience() {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const experienceRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Animate heading
+    gsap.fromTo(
+      headingRef.current,
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: 'top 80%',
+          end: 'top 20%',
+          scrub: false,
+          markers: false,
+        },
+      }
+    );
+
+    // Animate experience cards
+    if (experienceRef.current) {
+      const cards = experienceRef.current.querySelectorAll('[data-experience-card]');
+      gsap.fromTo(
+        cards,
+        { opacity: 0, x: -60, rotateY: 10 },
+        {
+          opacity: 1,
+          x: 0,
+          rotateY: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: experienceRef.current,
+            start: 'top 75%',
+            end: 'top 25%',
+            scrub: false,
+            markers: false,
+          },
+        }
+      );
+    }
+  }, []);
+
   return (
     <section id="experience" className="py-20 bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <h2 className="text-2xl text-gray-500 mb-4 font-light">Experience</h2>
-          <h3 className="text-6xl lg:text-7xl font-black">Professional Journey</h3>
+          <h3 ref={headingRef} className="text-6xl lg:text-7xl font-black">
+            Professional Journey
+          </h3>
         </div>
 
-        <div className="relative">
+        <div ref={experienceRef} className="relative">
           <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-lime-400 to-lime-400 hidden md:block" />
 
           <div className="space-y-12">
-            <div className="relative pl-0 md:pl-24">
+            <div data-experience-card className="relative pl-0 md:pl-24">
               <div className="absolute left-5 top-8 w-6 h-6 bg-lime-400 rounded-full border-4 border-black hidden md:block" />
 
               <div className="bg-black border border-gray-800 p-8 rounded-2xl hover:border-lime-400/30 transition-all duration-300">

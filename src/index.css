@@ -17,6 +17,20 @@
   }
 }
 
+@layer components {
+  .parallax-container {
+    @apply will-change-transform;
+  }
+
+  .scroll-section {
+    @apply relative;
+  }
+
+  .scroll-fade-element {
+    @apply opacity-0;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }
